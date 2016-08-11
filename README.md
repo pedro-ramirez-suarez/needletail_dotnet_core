@@ -11,7 +11,7 @@
 <li>The .Net Core version is only compatible with MSSQL, the full version supports MySQL and SQL CE</li>
 <li>For now the library only looks for connection strings in the "appsettings.json" file, future versions will be able to find connection strings in any source defined in a Builder</li>
 <li>Performance compared with EF Core is similar for sync operations but is far more faster than EF Core on async operations, The full Needletail version is a lot of faster than EF 6 and previous in sync and async operations.</li>
-<ul>
+</ul>
 
 <h2>Using DataAccess</h2>
 <a href="https://github.com/pedro-ramirez-suarez/needletailtools/wiki/Using-Needletail#dataaccess">How to use it.</a>
