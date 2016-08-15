@@ -292,7 +292,7 @@ namespace Needletail.DataAccess {
             //set the transaction if is set
             if (localTransaction != null)
                 cmd.Transaction = localTransaction;
-            if (BeforeRunCommand != null) BeforeRunCommand(cmd);
+            BeforeRunCommand?.Invoke(cmd);
             cmd.Prepare();
             var newId = await cmd.ExecuteScalarAsync();
             
@@ -301,7 +301,7 @@ namespace Needletail.DataAccess {
                 cmd.CommandText = " SELECT @@IDENTITY From [" + TableName + "]"; //To select the indentity
                 if (localTransaction != null)
                     cmd.Transaction = localTransaction;
-                if (BeforeRunCommand != null) BeforeRunCommand(cmd);
+                BeforeRunCommand?.Invoke(cmd);
                 cmd.Prepare();
                 newId =  await cmd.ExecuteScalarAsync(); //fix this
                     
@@ -371,7 +371,7 @@ namespace Needletail.DataAccess {
             //set the transaction if is set
             if (localTransaction != null)
                 cmd.Transaction = localTransaction;
-            if (BeforeRunCommand != null) BeforeRunCommand(cmd);
+            BeforeRunCommand?.Invoke(cmd);
             cmd.Prepare();
             var newId = cmd.ExecuteScalar();
 
@@ -380,7 +380,7 @@ namespace Needletail.DataAccess {
                 cmd.CommandText = " SELECT @@IDENTITY From [" + TableName + "]"; //To select the indentity
                 if (localTransaction != null)
                     cmd.Transaction = localTransaction;
-                if (BeforeRunCommand != null) BeforeRunCommand(cmd);
+                BeforeRunCommand?.Invoke(cmd);
                 cmd.Prepare();
                 newId = cmd.ExecuteScalar(); //fix this
 
@@ -485,7 +485,7 @@ namespace Needletail.DataAccess {
             uq.AppendFormat(" WHERE [{0}] = @{0}", this.Key);
             
             cmd.CommandText = uq.ToString();
-            if (BeforeRunCommand != null) BeforeRunCommand(cmd);
+            BeforeRunCommand?.Invoke(cmd);
             if (connection.State != ConnectionState.Closed && !isolationLevel.HasValue) connection.Close();
             //open the connection if we are not in a transaction
             if (!isolationLevel.HasValue)
@@ -533,7 +533,7 @@ namespace Needletail.DataAccess {
             uq.AppendFormat(" WHERE [{0}] = @{0}", this.Key);
 
             cmd.CommandText = uq.ToString();
-            if (BeforeRunCommand != null) BeforeRunCommand(cmd);
+            BeforeRunCommand?.Invoke(cmd);
             if (connection.State != ConnectionState.Closed && !isolationLevel.HasValue) connection.Close();
             //open the connection if we are not in a transaction
             if (!isolationLevel.HasValue)
@@ -584,7 +584,7 @@ namespace Needletail.DataAccess {
 
             //execute it
             cmd.CommandText = uq.ToString();
-            if (BeforeRunCommand != null) BeforeRunCommand(cmd);
+            BeforeRunCommand?.Invoke(cmd);
             if (connection.State != ConnectionState.Closed && !isolationLevel.HasValue) connection.Close();
             //open the connection if we are not in a transaction
             if (!isolationLevel.HasValue)
@@ -623,7 +623,7 @@ namespace Needletail.DataAccess {
 
             //execute it
             cmd.CommandText = uq.ToString();
-            if (BeforeRunCommand != null) BeforeRunCommand(cmd);
+            BeforeRunCommand?.Invoke(cmd);
             if (connection.State != ConnectionState.Closed && !isolationLevel.HasValue) connection.Close();
             //open the connection if we are not in a transaction
             if (!isolationLevel.HasValue)
@@ -679,7 +679,7 @@ namespace Needletail.DataAccess {
 
             //execute it
             cmd.CommandText = wq.ToString();
-            if (BeforeRunCommand != null) BeforeRunCommand(cmd);
+            BeforeRunCommand?.Invoke(cmd);
             if (connection.State != ConnectionState.Closed && !isolationLevel.HasValue) connection.Close();
             //open the connection only if we are not in the middle of a transaction
             if (!isolationLevel.HasValue)
@@ -717,7 +717,7 @@ namespace Needletail.DataAccess {
 
             //execute it
             cmd.CommandText = wq.ToString();
-            if (BeforeRunCommand != null) BeforeRunCommand(cmd);
+            BeforeRunCommand?.Invoke(cmd);
             if (connection.State != ConnectionState.Closed && !isolationLevel.HasValue) connection.Close();
             //open the connection only if we are not in the middle of a transaction
             if (!isolationLevel.HasValue)
@@ -1312,7 +1312,7 @@ namespace Needletail.DataAccess {
             IList<T> list = new List<T>();
             if (connection.State != ConnectionState.Closed) connection.Close();
             connection.Open();
-            if (BeforeRunCommand != null) BeforeRunCommand(cmd);
+            BeforeRunCommand?.Invoke(cmd);
             cmd.Prepare();
             //fill the collection
             using (var reader = await cmd.ExecuteReaderAsync())
@@ -1359,7 +1359,7 @@ namespace Needletail.DataAccess {
             IList<T> list = new List<T>();
             if (connection.State != ConnectionState.Closed) connection.Close();
             connection.Open();
-            if (BeforeRunCommand != null) BeforeRunCommand(cmd);
+            BeforeRunCommand?.Invoke(cmd);
             cmd.Prepare();
             //fill the collection
             using (var reader = cmd.ExecuteReader())
@@ -1400,7 +1400,7 @@ namespace Needletail.DataAccess {
             List<DynamicEntity> list = new List<DynamicEntity>();
             if (connection.State != ConnectionState.Closed) connection.Close();
             connection.Open();
-            if (BeforeRunCommand != null) BeforeRunCommand(cmd);
+            BeforeRunCommand?.Invoke(cmd);
             cmd.Prepare();
             
             //fill the collection
@@ -1427,7 +1427,7 @@ namespace Needletail.DataAccess {
             List<DynamicEntity> list = new List<DynamicEntity>();
             if (connection.State != ConnectionState.Closed) connection.Close();
             connection.Open();
-            if (BeforeRunCommand != null) BeforeRunCommand(cmd);
+            BeforeRunCommand?.Invoke(cmd);
             cmd.Prepare();
 
             //fill the collection
@@ -1458,7 +1458,7 @@ namespace Needletail.DataAccess {
             List<T> list = new List<T>();
             if (connection.State != ConnectionState.Closed) connection.Close();
             connection.Open();
-            if (BeforeRunCommand != null) BeforeRunCommand(cmd);
+            BeforeRunCommand?.Invoke(cmd);
             cmd.Prepare();
             
             //fill the collection
@@ -1499,7 +1499,7 @@ namespace Needletail.DataAccess {
             List<T> list = new List<T>();
             if (connection.State != ConnectionState.Closed) connection.Close();
             connection.Open();
-            if (BeforeRunCommand != null) BeforeRunCommand(cmd);
+            BeforeRunCommand?.Invoke(cmd);
             cmd.Prepare();
 
             //fill the collection
@@ -1604,7 +1604,7 @@ namespace Needletail.DataAccess {
             if (connection.State != ConnectionState.Closed) connection.Close();
             //execute the query
             connection.Open();
-            if (BeforeRunCommand != null) BeforeRunCommand(cmd);
+            BeforeRunCommand?.Invoke(cmd);
             cmd.Prepare();                
             await cmd.ExecuteNonQueryAsync();
             connection.Close();
@@ -1624,7 +1624,7 @@ namespace Needletail.DataAccess {
             AddParameters(cmd, args);
             if (connection.State != ConnectionState.Closed) connection.Close();
             connection.Open();
-            if (BeforeRunCommand != null) BeforeRunCommand(cmd);
+            BeforeRunCommand?.Invoke(cmd);
             //execute the query
             cmd.Prepare();
 
