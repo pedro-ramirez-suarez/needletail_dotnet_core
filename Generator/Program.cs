@@ -9,9 +9,12 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
-using System.Runtime.Loader;
+
 using DataAccess.Scaffold.Attributes;
 using Needletail.DataAccess.Attributes;
+using Microsoft.EntityFrameworkCore.Design;
+using Generator.Helpers;
+using System.Runtime.Loader;
 
 namespace Generator
 {
@@ -61,7 +64,7 @@ namespace Generator
                         //Load all assemblies that do not start with System
 
                         //AppDomain currentDomain = AppDomain.CurrentDomain;
-                        var currentDomain = AssemblyLoadContext.Default;
+                        //var currentDomain = AssemblyLoadContext.Default;
                         
 
                         //currentDomain.AssemblyResolve += currentDomain_AssemblyResolve;
@@ -73,9 +76,12 @@ namespace Generator
                         {
                             if (file.Name.StartsWith("System") || file.Name.StartsWith("Microsoft") || file.Name.StartsWith("Entity"))
                                 continue;
-                            //load the assembly and check for the entity
-                            var aName = new AssemblyName(file.FullName);
+
+                            //var loader = new LoadContextHelper();
+                            var aName = AssemblyLoadContext.GetAssemblyName(file.FullName);
+                            
                             var library = Assembly.Load(aName);
+                            //var library = loader.LoadFromAssemblyName(aName);
 
                             Type[] types = null;
                             try

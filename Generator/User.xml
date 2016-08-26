@@ -1,0 +1,1 @@
+﻿<?xml version="1.0" encoding="utf-8"?><model><entity name="User" namespace="SampleModel" primaryKeyType="Guid"><fields><Id /><UserName /><Phone validator="phone"><Validator /></Phone></fields></entity></model>
