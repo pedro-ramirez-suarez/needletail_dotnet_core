@@ -38,7 +38,7 @@ namespace DataAccess.Scaffold.Attributes
             {
                 if (validatorDetails == null)
                     validatorDetails = new Dictionary<string, string>();
-                validatorDetails.Add("Value", Value.ToString());
+                validatorDetails.Add("value", Value.ToString());
                 return validatorDetails;
             }
         }

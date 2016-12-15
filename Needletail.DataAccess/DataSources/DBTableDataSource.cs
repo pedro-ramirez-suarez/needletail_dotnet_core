@@ -47,6 +47,8 @@ namespace Needletail.DataAccess {
         private string Key { get; set; }
         private bool InsertKey { get; set; }
         private PropertyInfo[] EProperties {get;set;}
+
+
         private IDBMSEngine DBMSEngineHelper { get; set; }
         //TypeConverter converter;
 
@@ -189,8 +191,6 @@ namespace Needletail.DataAccess {
                 }
             }
             this.EProperties = props;
-
-
 
             lock (connection)
             {
@@ -1334,8 +1334,7 @@ namespace Needletail.DataAccess {
                         {
                             if (p.CanWrite && cols.IndexOf(p.Name) > -1 && reader[p.Name] != DBNull.Value)
                             {
-                                //check if the property exists in the DB
-                                p.SetValue(item, reader[p.Name], null);
+                                p.SetMethod.Invoke(item, new object[] { reader[p.Name]});
                             }
 
                         }
@@ -1381,8 +1380,7 @@ namespace Needletail.DataAccess {
                         {
                             if (p.CanWrite && cols.IndexOf(p.Name) > -1 && reader[p.Name] != DBNull.Value)
                             {
-                                //check if the property exists in the DB
-                                p.SetValue(item, reader[p.Name], null);
+                                p.SetMethod.Invoke(item, new object[] { reader[p.Name] });
                             }
 
                         }

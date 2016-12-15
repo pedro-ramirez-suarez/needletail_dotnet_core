@@ -69,7 +69,7 @@ namespace Generator
 
                         //currentDomain.AssemblyResolve += currentDomain_AssemblyResolve;
 
-                        di = new DirectoryInfo(projectPath + @"\bin");
+                        di = new DirectoryInfo(projectPath + @"\bin\Debug\netcoreapp1.0");
                         var dlls = di.GetFiles("*.dll");
                         entityType = null;
                         foreach (var file in dlls)
@@ -78,10 +78,15 @@ namespace Generator
                                 continue;
 
                             //var loader = new LoadContextHelper();
+
+
+                            //first load needletail
+                            //var needle = AssemblyLoadContext.GetAssemblyName(Path.Combine(file.Directory.FullName, "Needletail.DataAccess.dll"));
+                            //var needledll = Assembly.Load(needle);
+                            //var scaff = AssemblyLoadContext.GetAssemblyName(Path.Combine(file.Directory.FullName, "Needletail.Scaffold.dll"));
+                            //var scaffdll = Assembly.Load(scaff);
                             var aName = AssemblyLoadContext.GetAssemblyName(file.FullName);
-                            
                             var library = Assembly.Load(aName);
-                            //var library = loader.LoadFromAssemblyName(aName);
 
                             Type[] types = null;
                             try
@@ -133,6 +138,7 @@ namespace Generator
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
+               
             }
 
 
@@ -140,7 +146,7 @@ namespace Generator
 
 #if DEBUG
             //Console.WriteLine("Finished!");
-            //Console.ReadKey();
+            Console.ReadKey();
 #endif
         }
 

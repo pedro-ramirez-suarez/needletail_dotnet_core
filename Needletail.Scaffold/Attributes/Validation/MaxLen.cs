@@ -27,7 +27,7 @@ namespace DataAccess.Scaffold.Attributes
         {
             get
             {
-                return "max";
+                return "stringLength";
             }
         }
 
@@ -38,7 +38,7 @@ namespace DataAccess.Scaffold.Attributes
             {
                 if (validatorDetails == null)
                     validatorDetails = new Dictionary<string, string>();
-                validatorDetails.Add("Max", Value.ToString());
+                validatorDetails.Add("max", Value.ToString());
                 return validatorDetails;
             }
         }

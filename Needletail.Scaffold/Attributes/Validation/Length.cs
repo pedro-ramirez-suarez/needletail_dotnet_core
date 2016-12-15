@@ -38,7 +38,8 @@ namespace DataAccess.Scaffold.Attributes
             {
                 if (validatorDetails == null)
                     validatorDetails = new Dictionary<string, string>();
-                validatorDetails.Add("Len", Value.ToString());
+                validatorDetails.Add("min", Value.ToString());
+                validatorDetails.Add("max", Value.ToString());
                 return validatorDetails;
             }
         }

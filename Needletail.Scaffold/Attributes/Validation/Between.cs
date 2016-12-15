@@ -42,8 +42,8 @@ namespace DataAccess.Scaffold.Attributes
             {
                 if(validatorDetails == null)
                     validatorDetails = new Dictionary<string, string>();
-                validatorDetails.Add("Max",MaxValue.ToString());
-                validatorDetails.Add("Min", MinValue.ToString());
+                validatorDetails.Add("max",MaxValue.ToString());
+                validatorDetails.Add("min", MinValue.ToString());
                 return validatorDetails;
             }
         }

@@ -43,7 +43,7 @@ namespace DataAccess.Scaffold.Attributes
             {
                 if (validatorDetails == null)
                     validatorDetails = new Dictionary<string, string>();
-                validatorDetails.Add("RegExp",RegularExpression);         
+                validatorDetails.Add("regexp", RegularExpression);         
                 return validatorDetails;
             }
         }
