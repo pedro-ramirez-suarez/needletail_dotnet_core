@@ -40,10 +40,10 @@ namespace Needletail.DataAccess {
         private DbTransaction localTransaction;
         private IsolationLevel? isolationLevel;
 
-
         private string ConnectionString { get; set; }
+        private string ConnectionStringName { get; set; }
         private string TableName { get; set; }
-        private string ConnectionKey { get { return string.Format("{0}:{1}", ConnectionString, TableName); } }
+        private string ConnectionKey { get { return string.Format("{0}:{1}", ConnectionStringName, TableName); } }
         private string Key { get; set; }
         private bool InsertKey { get; set; }
         private PropertyInfo[] EProperties {get;set;}
@@ -57,7 +57,7 @@ namespace Needletail.DataAccess {
         /// </summary>
         public DBTableDataSourceBase()
         {
-            DBTableDataSourceInitializer("ConnectionString", typeof(E).Name);
+            DBTableDataSourceInitializer("DefaultConnection", typeof(E).Name);
         }
 
 
@@ -66,15 +66,25 @@ namespace Needletail.DataAccess {
         /// </summary>
         /// <param name="connectionString"></param>
         /// <param name="tableName"></param>
-        public DBTableDataSourceBase(string connectionString, string tableName) 
+        public DBTableDataSourceBase(string connectionStringName, string tableName) 
         {
-            DBTableDataSourceInitializer(connectionString, tableName);
+            DBTableDataSourceInitializer(connectionStringName, tableName);
         }
-        
 
-        private void DBTableDataSourceInitializer(string connectionString, string tableName)
+
+        /// <summary>
+        /// Use this constructor when you need to pass a full connection string
+        /// </summary>
+        /// <param name="connectionString"></param>
+        public DBTableDataSourceBase(string fullConnectionString)
         {
-            if (string.IsNullOrWhiteSpace(connectionString))
+            this.ConnectionString = fullConnectionString;
+            DBTableDataSourceInitializer("DefaultConnection", typeof(E).Name);
+        }
+
+        private void DBTableDataSourceInitializer(string connectionStringName, string tableName)
+        {
+            if (string.IsNullOrWhiteSpace(connectionStringName))
             {
                 throw new ArgumentNullException("connectionString");
             }
@@ -83,18 +93,23 @@ namespace Needletail.DataAccess {
                 throw new ArgumentNullException("tableName");
             }
 
-            ConnectionString = connectionString;
+            ConnectionStringName = connectionStringName;
             TableName = tableName;
-
-            var builder = new ConfigurationBuilder();
-            builder.SetBasePath((Directory.GetCurrentDirectory()));
-            builder.AddJsonFile("appsettings.json").Build();
-            var config = builder.Build();
-            string cn = config.GetConnectionString("DefaultConnection");
+            string cn = null;
+            if (string.IsNullOrWhiteSpace(this.ConnectionString))
+            {
+                var builder = new ConfigurationBuilder();
+                builder.SetBasePath((Directory.GetCurrentDirectory()));
+                builder.AddJsonFile("appsettings.json").Build();
+                var config = builder.Build();
+                cn = config.GetConnectionString(this.ConnectionStringName);
+            }
+            else
+                cn = this.ConnectionString;
 
             if (cn == null)
             {
-                throw new Exception("connection string does not exists");
+                throw new Exception("connection string does not exists or is not set");
             }
 
 
@@ -221,9 +236,11 @@ namespace Needletail.DataAccess {
         public void CommitTransaction()
         {
             //commit the transaction
-            localTransaction.Commit();
+            if(localTransaction!=null)
+                localTransaction.Commit();
             //close the connection
-            connection.Close();
+            if(connection!= null)
+                connection.Close();
             localTransaction = null;
             isolationLevel = null;
         }
@@ -233,9 +250,12 @@ namespace Needletail.DataAccess {
         /// </summary>
         public void RollbackTransaction()
         {
-            localTransaction.Rollback();
+            //rollback the transaction
+            if(localTransaction!= null)
+                localTransaction.Rollback();
             //close the connection
-            connection.Close();
+            if(connection != null)
+                connection.Close();
             localTransaction = null;
             isolationLevel = null;
         }
@@ -260,7 +280,7 @@ namespace Needletail.DataAccess {
                     mainQuery.Append(p.Name);
                     valsQuery.AppendFormat("@{0}", p.Name);
                     //add the parameter
-                    AddParameter(p.Name, p.GetValue(newItem, null), cmd);
+                    AddParameter(p.Name, p.GetMethod.Invoke(newItem, null), cmd);
 
                     if (x <= this.EProperties.Length - 2)
                     {
@@ -269,7 +289,7 @@ namespace Needletail.DataAccess {
                     }
 
                     if (p.Name == this.Key)
-                        keyValue = p.GetValue(newItem, null);
+                        keyValue = p.GetMethod.Invoke(newItem, null);
                 }
             }
             mainQuery.Append(")");//Close the values
@@ -339,7 +359,7 @@ namespace Needletail.DataAccess {
                     mainQuery.Append(p.Name);
                     valsQuery.AppendFormat("@{0}", p.Name);
                     //add the parameter
-                    AddParameter(p.Name, p.GetValue(newItem, null), cmd);
+                    AddParameter(p.Name, p.GetMethod.Invoke(newItem, null), cmd);
 
                     if (x <= this.EProperties.Length - 2)
                     {
@@ -348,7 +368,7 @@ namespace Needletail.DataAccess {
                     }
 
                     if (p.Name == this.Key)
-                        keyValue = p.GetValue(newItem, null);
+                        keyValue = p.GetMethod.Invoke(newItem, null);
                 }
             }
             mainQuery.Append(")");//Close the values
@@ -1194,7 +1214,7 @@ namespace Needletail.DataAccess {
                 {
                     uq.AppendFormat(" {0} = @{0} ", p.Name);
                     //add the parameter
-                    AddParameter(p.Name, p.GetValue(item, null), cmd);
+                    AddParameter(p.Name, p.GetMethod.Invoke(item, null), cmd);
 
                     // we have the key
                     if (p.Name == this.Key)
@@ -1210,7 +1230,7 @@ namespace Needletail.DataAccess {
                 {
                     //add the key as a parameter
                     keyFound = true;
-                    AddParameter(p.Name, p.GetValue(item, null), cmd);
+                    AddParameter(p.Name, p.GetMethod.Invoke(item, null), cmd);
                 }
             }
             return uq;
@@ -1250,7 +1270,7 @@ namespace Needletail.DataAccess {
                 }
 
                 //add the parameter
-                var newParam = AddParameter(parameterName, p.GetValue(where, null), cmd);
+                var newParam = AddParameter(parameterName, p.GetMethod.Invoke(where, null), cmd);
                 if (newParam != null)
                     w.Replace(parameterName, newParam);
                 
@@ -1267,7 +1287,7 @@ namespace Needletail.DataAccess {
             {
                 var p = props[x];
                 //add the parameter
-                var newParam = AddParameter(p.Name, p.GetValue(parameters, null), cmd);
+                var newParam = AddParameter(p.Name, p.GetMethod.Invoke(parameters, null), cmd);
             }
         }
         private StringBuilder OrderByBuilder(object orderBy, DbCommand cmd)
@@ -1287,7 +1307,7 @@ namespace Needletail.DataAccess {
             for (int x = 0; x < props.Length; x++)
             {
                 var p = props[x];
-                var direction = p.GetValue(orderBy).ToString().ToUpper();
+                var direction = p.GetMethod.Invoke(orderBy,null).ToString().ToUpper();
                 if (direction == "ASC" || direction == "DESC")
                 {
                     w.AppendFormat(" {0} {1} ", p.Name, direction);
@@ -1479,7 +1499,8 @@ namespace Needletail.DataAccess {
                         var p = tType.GetTypeInfo().GetProperty(cols[x]);
                         if (p != null && reader.GetValue(x) != DBNull.Value)
                         {
-                            p.SetValue(item,reader.GetValue(x), null);
+                            //p.SetValue(item,reader.GetValue(x), null);
+                            p.SetMethod.Invoke(item, new object[] { reader.GetValue(x) });
                         }
 
                     }
@@ -1520,7 +1541,8 @@ namespace Needletail.DataAccess {
                         var p = tType.GetTypeInfo().GetProperty(cols[x]);
                         if (p != null && reader.GetValue(x) != DBNull.Value)
                         {
-                            p.SetValue(item, reader.GetValue(x), null);
+                            //p.SetValue(item, reader.GetValue(x), null);
+                            p.SetMethod.Invoke(item, new object[] { reader.GetValue(x) });
                         }
 
                     }
@@ -1564,8 +1586,27 @@ namespace Needletail.DataAccess {
             else
             { 
                 param.Value = value != null ? value : DBNull.Value;
+                //if the value it's a decimal, 
+                Type t = value.GetType();
+                byte precision = 10;
+                byte scale = 2;
+                if (t == typeof(decimal) || t == typeof(float) || t == typeof(Int64))
+                {
+                    //precision
+                    string val = value.ToString();
+                    if (!byte.TryParse(val.Length.ToString(), out precision))
+                        precision = 38;
+                    //scale
+                    var point = val.IndexOf(".");
+                    if (point != -1)
+                    {
+                        if (!byte.TryParse((val.Length - point).ToString(), out scale))
+                            scale = 30;
+                    }
+                }
+
                 //The dbType and the rest of the info
-                this.DBMSEngineHelper.ConfigureParameterForValue(param, value);
+                this.DBMSEngineHelper.ConfigureParameterForValue(param, value, precision, scale);
 
                 param.Direction = System.Data.ParameterDirection.Input;
                 param.Size = param.Value != null ? param.Value.ToString().Length + 1 : 1;

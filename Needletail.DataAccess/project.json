@@ -1,6 +1,5 @@
 {
   "version": "1.0.0-*",
-
   "dependencies": {
     "Microsoft.Extensions.Configuration.Json": "1.0.0",
     "Microsoft.IdentityModel.Protocols": "2.0.0",
@@ -9,10 +8,12 @@
     "System.Data.SqlClient": "4.1.0",
     "System.Dynamic.Runtime": "4.0.11"
   },
-
   "frameworks": {
     "netstandard1.6": {
       "imports": "dnxcore50"
     }
+  },
+  "buildOptions": {
+    "optimize": true
   }
 }

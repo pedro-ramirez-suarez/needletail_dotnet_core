@@ -17,7 +17,7 @@ namespace Needletail.DataAccess.Engines {
         public override string GetQueryForPagination(string columns, string from, string where, string orderBy, int pageSize, int pageNumber, string key)
         {
             return string.Format(
-                "SELECT * FROM (SELECT ROW_NUMBER() OVER (ORDER BY {0}) AS Row,{1} FROM {2} {3}) AS PAGED WHERE Row BETWEEN {5} AND {6} {4}",
+                "SELECT * FROM (SELECT ROW_NUMBER() OVER (ORDER BY {0}) AS Row,{1} FROM [{2}] {3}) AS PAGED WHERE Row BETWEEN {5} AND {6} {4}",
                                 key,
                                 columns,
                                 from,
@@ -45,7 +45,7 @@ namespace Needletail.DataAccess.Engines {
         }
 
 
-        public override void ConfigureParameterForValue(DbParameter param, object value)
+        public override void ConfigureParameterForValue(DbParameter param, object value, byte precision = 10, byte scale = 2)
         {
             param.DbType = Converters.GetDBTypeFor(param.Value);
             if (value == null || value == DBNull.Value)
@@ -53,8 +53,8 @@ namespace Needletail.DataAccess.Engines {
             if (param.DbType == System.Data.DbType.Decimal)
             { 
                 //set precision 
-                (param as SqlParameter).Precision = 10; // this has to be configured manually
-                (param as SqlParameter).Scale = 2; // this has to be configured manually
+                (param as SqlParameter).Precision = precision; // this has to be configured manually
+                (param as SqlParameter).Scale = scale; // this has to be configured manually
             }
             //SqlGeography and SqlGeometry are not available in .Net core1
             //else if (value.GetType() == typeof(SqlGeography))
