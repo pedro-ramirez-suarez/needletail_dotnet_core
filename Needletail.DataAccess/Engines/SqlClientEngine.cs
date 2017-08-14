@@ -64,8 +64,8 @@ namespace Needletail.DataAccess.Engines {
                         scale = 30;
                 }
 
-                if (precision < scale)
-                    precision += (byte)(scale + 2);
+                if (precision <= scale)
+                    precision += (byte)(scale + 3);
 
                 //set precision 
                 (param as SqlParameter).Precision = precision; // this has to be configured manually
