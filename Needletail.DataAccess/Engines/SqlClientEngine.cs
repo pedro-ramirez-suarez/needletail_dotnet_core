@@ -63,9 +63,10 @@ namespace Needletail.DataAccess.Engines {
                     if (!byte.TryParse((val.Length - point).ToString(), out scale))
                         scale = 30;
                 }
-
-                if (precision <= scale)
-                    precision += (byte)(scale + 2);
+                else
+                    scale = 0;
+                if (precision <= scale + 2)
+                    precision += (byte)(scale+2);
 
                 //set precision 
                 (param as SqlParameter).Precision = precision; // this has to be configured manually
