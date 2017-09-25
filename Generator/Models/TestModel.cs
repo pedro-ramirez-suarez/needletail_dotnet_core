@@ -11,5 +11,7 @@ namespace Generator.Models
 
         [TableKey(CanInsertKey =true)]
         public Guid Id { get; set; }
+
+        public DateTime? MyDate { get; set; }
     }
 }

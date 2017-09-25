@@ -481,7 +481,11 @@ namespace Generator
                     //write any atrtibutes and elements 
                     var validators = atts.Where(a => (a as NeedletailAttribute) != null).ToList();
                     string attsVal = string.Empty;
-                    switch (p.PropertyType.Name)
+                    string pType = p.PropertyType.Name;
+                    if (pType.Contains("Nullable") && p.PropertyType.GenericTypeArguments[0].Name == "DateTime")
+                        pType = "DateTime";
+
+                    switch (pType)
                     {
                         case "DateTime":
                             attsVal = "date";

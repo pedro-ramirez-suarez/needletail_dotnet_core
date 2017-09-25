@@ -17,5 +17,8 @@ namespace SampleModel
 
         [Phone]
         public string Phone { get; set; }
+
+
+        public DateTime MyDate { get; set; }
     }
 }

@@ -982,7 +982,7 @@ namespace Needletail.DataAccess {
             {
                 throw new ArgumentNullException("name");
             }
-            IList<E> list = new List<E>();
+            //IList<E> list = new List<E>();
             var cmd = factory.CreateCommand();
             cmd.CommandType = CommandType.StoredProcedure;
             cmd.Connection = connection;
@@ -993,6 +993,7 @@ namespace Needletail.DataAccess {
 
             return await CreateGenericListFromCommandAsync<T> (cmd);
         }
+
 
 
         public IEnumerable<DynamicEntity> ExecuteStoredProcedureReturnDynaimcRows(string name, object parameters)
@@ -1334,6 +1335,7 @@ namespace Needletail.DataAccess {
             connection.Open();
             BeforeRunCommand?.Invoke(cmd);
             cmd.Prepare();
+            var tProps = typeof(T) == typeof(E) ? this.EProperties : typeof(T).GetTypeInfo().GetProperties();
             //fill the collection
             using (var reader = await cmd.ExecuteReaderAsync())
             {
@@ -1350,7 +1352,7 @@ namespace Needletail.DataAccess {
                     do
                     {
                         var item = Activator.CreateInstance<T>();
-                        foreach (var p in this.EProperties)
+                        foreach (var p in tProps) //we are not using the right properties
                         {
                             if (p.CanWrite && cols.IndexOf(p.Name) > -1 && reader[p.Name] != DBNull.Value)
                             {
@@ -1380,6 +1382,7 @@ namespace Needletail.DataAccess {
             connection.Open();
             BeforeRunCommand?.Invoke(cmd);
             cmd.Prepare();
+            var tProps = typeof(T) == typeof(E) ? this.EProperties : typeof(T).GetTypeInfo().GetProperties();
             //fill the collection
             using (var reader = cmd.ExecuteReader())
             {
@@ -1396,7 +1399,7 @@ namespace Needletail.DataAccess {
                     do
                     {
                         var item = Activator.CreateInstance<T>();
-                        foreach (var p in this.EProperties)
+                        foreach (var p in tProps)
                         {
                             if (p.CanWrite && cols.IndexOf(p.Name) > -1 && reader[p.Name] != DBNull.Value)
                             {
