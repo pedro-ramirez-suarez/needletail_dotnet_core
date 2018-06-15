@@ -50,14 +50,16 @@ namespace Needletail.DataAccess {
 
 
         private IDBMSEngine DBMSEngineHelper { get; set; }
+
+        public string Provider{ get; set; }
         //TypeConverter converter;
 
         /// <summary>
         /// Default ctor
         /// </summary>
-        public DBTableDataSourceBase()
+        public DBTableDataSourceBase(string provider = "SqlClient")
         {
-            DBTableDataSourceInitializer("DefaultConnection", typeof(E).Name);
+            DBTableDataSourceInitializer("DefaultConnection", typeof(E).Name, provider);
         }
 
 
@@ -66,9 +68,9 @@ namespace Needletail.DataAccess {
         /// </summary>
         /// <param name="connectionString"></param>
         /// <param name="tableName"></param>
-        public DBTableDataSourceBase(string connectionStringName, string tableName) 
+        public DBTableDataSourceBase(string connectionStringName, string tableName,string provider = "SqlClient") 
         {
-            DBTableDataSourceInitializer(connectionStringName, tableName);
+            DBTableDataSourceInitializer(connectionStringName, tableName, provider);
         }
 
 
@@ -76,14 +78,15 @@ namespace Needletail.DataAccess {
         /// Use this constructor when you need to pass a full connection string
         /// </summary>
         /// <param name="connectionString"></param>
-        public DBTableDataSourceBase(string fullConnectionString)
+        public DBTableDataSourceBase(string fullConnectionString,string provider = "SqlClient")
         {
             this.ConnectionString = fullConnectionString;
-            DBTableDataSourceInitializer("DefaultConnection", typeof(E).Name);
+            DBTableDataSourceInitializer("DefaultConnection", typeof(E).Name,provider);
         }
 
-        private void DBTableDataSourceInitializer(string connectionStringName, string tableName)
+        private void DBTableDataSourceInitializer(string connectionStringName, string tableName, string provider)
         {
+            this.Provider = provider;
             if (string.IsNullOrWhiteSpace(connectionStringName))
             {
                 throw new ArgumentNullException("connectionString");
@@ -122,20 +125,8 @@ namespace Needletail.DataAccess {
             }
 
             /* Net Core 1 does not allow me to use different providers, so we are only using SQL */
-            string provider = "SqlClient";
-            //get the provider
-            //var parts = cn.ProviderName.Split(new char[] { '.' });
-            //string provider = string.Empty;
-            //for (int x = parts.Length - 1; x >= 0; x--)
-            //{
-            //    //add the part until the part is not a number
-            //    int tmp;
-            //    if (!int.TryParse(parts[x], out tmp))
-            //    {
-            //        provider = parts[x];
-            //        break;
-            //    }
-            //}
+            
+            
 
             string engineName = string.Format("Needletail.DataAccess.Engines.{0}Engine", provider);
             Type engine = Type.GetType(engineName, false, true);
