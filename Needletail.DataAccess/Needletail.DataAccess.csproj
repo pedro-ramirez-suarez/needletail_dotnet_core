@@ -3,12 +3,22 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>Needletail.DataAccess</AssemblyName>
-    <PackageId>Needletail.DataAccess</PackageId>
+    <PackageId>Needletail.DataAccess.MySql</PackageId>
     <NetStandardImplicitPackageVersion>2.0.0</NetStandardImplicitPackageVersion>
     <!-- <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback> -->
     <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <PackOnBuild>true</PackOnBuild>
+    <PackageVersion>1.0.2</PackageVersion>
+    <Authors>pramirez</Authors>
+    <Owners>pramirez</Owners>
+    <Description>Micro ORM, this version supports MySQL  and SQL </Description>
+    <PackageIconUrl>https://raw.github.com/pedro-ramirez-suarez/needletailtools/master/logo.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/pedro-ramirez-suarez/needletailtools</PackageProjectUrl>
+    <PackageReleaseNotes>First version to Suport MySQL</PackageReleaseNotes>
+    <Summary>This version supports MySQL</Summary>
+    <Title>Needletail.DataAccess.MySql</Title>
   </PropertyGroup>
 
   <ItemGroup>

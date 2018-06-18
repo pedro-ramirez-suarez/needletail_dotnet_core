@@ -57,36 +57,36 @@ namespace Needletail.DataAccess {
         /// <summary>
         /// Default ctor
         /// </summary>
-        public DBTableDataSourceBase(string provider = "SqlClient")
+        public DBTableDataSourceBase(bool isMySql = false)
         {
-            DBTableDataSourceInitializer("DefaultConnection", typeof(E).Name, provider);
+            DBTableDataSourceInitializer("DefaultConnection", typeof(E).Name, isMySql);
         }
 
 
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="connectionString"></param>
+        /// <param name="connectionStringName"></param>
         /// <param name="tableName"></param>
-        public DBTableDataSourceBase(string connectionStringName, string tableName,string provider = "SqlClient") 
+        public DBTableDataSourceBase(string connectionStringName, string tableName,bool isMySql = false) 
         {
-            DBTableDataSourceInitializer(connectionStringName, tableName, provider);
+            DBTableDataSourceInitializer(connectionStringName, tableName, isMySql);
         }
 
 
         /// <summary>
         /// Use this constructor when you need to pass a full connection string
         /// </summary>
-        /// <param name="connectionString"></param>
-        public DBTableDataSourceBase(string fullConnectionString,string provider = "SqlClient")
+        /// <param name="fullConnectionString"></param>
+        public DBTableDataSourceBase(string fullConnectionString,bool isMySql = false)
         {
             this.ConnectionString = fullConnectionString;
-            DBTableDataSourceInitializer("DefaultConnection", typeof(E).Name,provider);
+            DBTableDataSourceInitializer("DefaultConnection", typeof(E).Name,isMySql);
         }
 
-        private void DBTableDataSourceInitializer(string connectionStringName, string tableName, string provider)
+        private void DBTableDataSourceInitializer(string connectionStringName, string tableName, bool isMySql)
         {
-            this.Provider = provider;
+            this.Provider = isMySql ? "MySql":"SqlClient" ;
             if (string.IsNullOrWhiteSpace(connectionStringName))
             {
                 throw new ArgumentNullException("connectionString");
@@ -118,7 +118,7 @@ namespace Needletail.DataAccess {
 
             //prepare the factory
             //.Net Core one does not support factories, we need to create our own only for SQL
-            factory = new NeedletailFactory(); //DbProviderFactories.GetFactory(cn.ProviderName);
+            factory = new NeedletailFactory(isMySql); //DbProviderFactories.GetFactory(cn.ProviderName);
             if (factory == null)
             {
                 throw new Exception("Cannot get provider");
@@ -128,7 +128,7 @@ namespace Needletail.DataAccess {
             
             
 
-            string engineName = string.Format("Needletail.DataAccess.Engines.{0}Engine", provider);
+            string engineName = string.Format("Needletail.DataAccess.Engines.{0}Engine", this.Provider);
             Type engine = Type.GetType(engineName, false, true);
             //if the engine was not found, search for all needletail assemblies
             if (engine == null)

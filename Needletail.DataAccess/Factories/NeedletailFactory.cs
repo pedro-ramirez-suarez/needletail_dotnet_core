@@ -4,30 +4,50 @@ using System.Data.Common;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using MySql.Data.MySqlClient;
 
 namespace Needletail.DataAccess.Factories
 {
     public class NeedletailFactory : System.Data.Common.DbProviderFactory
     {
+        private bool IsMySql {get; set; }
+        public NeedletailFactory(bool isMySql)
+        {
+            this.IsMySql = isMySql;
+        }
+
         public override DbCommand CreateCommand()
         {
-            return new SqlCommand();
+            if (IsMySql)
+                return new MySqlCommand();
+            else
+                return new SqlCommand();
         }
 
         public override DbConnection CreateConnection()
         {
-            return new SqlConnection();
-        }
+            if (IsMySql)
+                return new MySqlConnection();
+            else
+                return new SqlConnection();
+            }
 
         public override DbConnectionStringBuilder CreateConnectionStringBuilder()
         {
-            return new SqlConnectionStringBuilder();
+            if (IsMySql)
+                return new MySqlConnectionStringBuilder();
+            else
+                return new SqlConnectionStringBuilder();    
+            
         }
 
         public override DbParameter CreateParameter()
         {
-            return new SqlParameter();
-        }
+            if (IsMySql)
+                return new MySqlParameter();
+            else
+                return new SqlParameter();
+            }
 
         
     }
