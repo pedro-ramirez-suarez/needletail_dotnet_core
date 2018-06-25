@@ -13,7 +13,9 @@ namespace Needletail.DataAccess.Engines
         { 
         }
 
+        public abstract string ObjectOpen { get; }
 
+        public abstract string ObjectClose { get; }
 
 
         public virtual void ConfigureParameterForValue(DbParameter param, object value, byte precision = 10, byte scale = 2)

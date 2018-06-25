@@ -18,8 +18,9 @@ using Microsoft.IdentityModel.Protocols;
 using Needletail.DataAccess.Factories;
 using Microsoft.Extensions.Configuration;
 
-namespace Needletail.DataAccess {
-    public class DBTableDataSourceBase<E, K> : IDisposable, IDataSourceAsync<E, K>, IDataSource<E, K> 
+namespace Needletail.DataAccess
+{
+    public class DBTableDataSourceBase<E, K> : IDisposable, IDataSourceAsync<E, K>, IDataSource<E, K>
         where E : class
     {
 
@@ -46,7 +47,9 @@ namespace Needletail.DataAccess {
         private string ConnectionKey { get { return string.Format("{0}:{1}", ConnectionStringName, TableName); } }
         private string Key { get; set; }
         private bool InsertKey { get; set; }
-        private PropertyInfo[] EProperties {get;set;}
+        private PropertyInfo[] EProperties { get; set; }
+        private string OOpen { get { return this.DBMSEngineHelper.ObjectOpen; }  }
+        private string OClose { get { return this.DBMSEngineHelper.ObjectClose; } }
 
 
         private IDBMSEngine DBMSEngineHelper { get; set; }
@@ -259,7 +262,7 @@ namespace Needletail.DataAccess {
             //Build the query
             StringBuilder mainQuery = new StringBuilder();
             StringBuilder valsQuery = new StringBuilder();
-            mainQuery.AppendFormat("INSERT INTO [{0}] (", TableName);
+            mainQuery.AppendFormat("INSERT INTO {0}{1}{2} (", this.OOpen, TableName,this.OClose);
             valsQuery.Append("VALUES (");
             for (int x = 0; x < this.EProperties.Length; x++)
             {
@@ -309,7 +312,7 @@ namespace Needletail.DataAccess {
             
             if (newId == null)
             {
-                cmd.CommandText = " SELECT @@IDENTITY From [" + TableName + "]"; //To select the indentity
+                cmd.CommandText = " SELECT @@IDENTITY From " + this.OOpen + TableName + this.OClose; //To select the indentity
                 if (localTransaction != null)
                     cmd.Transaction = localTransaction;
                 BeforeRunCommand?.Invoke(cmd);
@@ -338,7 +341,7 @@ namespace Needletail.DataAccess {
             //Build the query
             StringBuilder mainQuery = new StringBuilder();
             StringBuilder valsQuery = new StringBuilder();
-            mainQuery.AppendFormat("INSERT INTO [{0}] (", TableName);
+            mainQuery.AppendFormat("INSERT INTO {0}{1}{2} (", this.OOpen, TableName,this.OClose);
             valsQuery.Append("VALUES (");
             for (int x = 0; x < this.EProperties.Length; x++)
             {
@@ -388,7 +391,7 @@ namespace Needletail.DataAccess {
 
             if (newId == null)
             {
-                cmd.CommandText = " SELECT @@IDENTITY From [" + TableName + "]"; //To select the indentity
+                cmd.CommandText = " SELECT @@IDENTITY From " + this.OOpen + TableName + this.OClose; //To select the indentity
                 if (localTransaction != null)
                     cmd.Transaction = localTransaction;
                 BeforeRunCommand?.Invoke(cmd);
@@ -433,7 +436,7 @@ namespace Needletail.DataAccess {
             cmd.Connection = connection;
             //Set the command
             orderBy = !string.IsNullOrWhiteSpace(orderBy) ? string.Format(" ORDER BY {0}", orderBy) : string.Empty;
-            cmd.CommandText = string.Format("SELECT * FROM [{0}] {1}", TableName, orderBy);
+            cmd.CommandText = string.Format("SELECT * FROM {0}{1}{2} {3}", this.OOpen, TableName, this.OClose, orderBy);
             return await CreateListFromCommandAsync(cmd);
         }
 
@@ -449,7 +452,7 @@ namespace Needletail.DataAccess {
             cmd.Connection = connection;
             //Set the command
             orderBy = !string.IsNullOrWhiteSpace(orderBy) ? string.Format(" ORDER BY {0}", orderBy) : string.Empty;
-            cmd.CommandText = string.Format("SELECT * FROM [{0}] {1}", TableName, orderBy);
+            cmd.CommandText = string.Format("SELECT * FROM {0}{1}{2} {3}", this.OOpen, TableName, this.OClose, orderBy);
             return CreateListFromCommand(cmd);
         }
 
@@ -493,7 +496,7 @@ namespace Needletail.DataAccess {
                 throw new Exception("Cannot determine the value for the primary Key");
             }
 
-            uq.AppendFormat(" WHERE [{0}] = @{0}", this.Key);
+            uq.AppendFormat(" WHERE {0}{1}{2} = @{1}", this.OOpen, this.Key,this.OClose);
             
             cmd.CommandText = uq.ToString();
             BeforeRunCommand?.Invoke(cmd);
@@ -541,7 +544,7 @@ namespace Needletail.DataAccess {
                 throw new Exception("Cannot determine the value for the primary Key");
             }
 
-            uq.AppendFormat(" WHERE [{0}] = @{0}", this.Key);
+            uq.AppendFormat(" WHERE {0}{1}{2} = @{1}", this.OOpen, this.Key, this.OClose);
 
             cmd.CommandText = uq.ToString();
             BeforeRunCommand?.Invoke(cmd);
@@ -680,7 +683,7 @@ namespace Needletail.DataAccess {
         {
             var cmd = factory.CreateCommand();
             cmd.Connection = connection;
-            string dq = string.Format("DELETE FROM [{0}] ", this.TableName);
+            string dq = string.Format("DELETE FROM {0}{1}{2} ", this.OOpen,this.TableName,this.OClose);
 
             var wq = WhereBuilder(where, cmd, filterType.ToString());
             if (string.IsNullOrWhiteSpace(wq.ToString()))
@@ -718,7 +721,7 @@ namespace Needletail.DataAccess {
         {
             var cmd = factory.CreateCommand();
             cmd.Connection = connection;
-            string dq = string.Format("DELETE FROM [{0}] ", this.TableName);
+            string dq = string.Format("DELETE FROM {0}{1}{2} ", this.OOpen, this.TableName, this.OClose);
 
             var wq = WhereBuilder(where, cmd, filterType.ToString());
             if (string.IsNullOrWhiteSpace(wq.ToString()))
@@ -760,7 +763,7 @@ namespace Needletail.DataAccess {
             var cmd = factory.CreateCommand();
             cmd.Connection = connection;
             //Set the command
-            cmd.CommandText = string.Format("{0} FROM [{1}] {2} {3}", select, this.TableName, string.IsNullOrWhiteSpace(where) ? "" : string.Format(" WHERE {0} ", where), string.IsNullOrWhiteSpace(orderBy) ? "" : string.Format(" Order By {0} ", orderBy));
+            cmd.CommandText = string.Format("{0} FROM {1}{2}{3} {4} {5}", select, this.OOpen, this.TableName, this.OClose, string.IsNullOrWhiteSpace(where) ? "" : string.Format(" WHERE {0} ", where), string.IsNullOrWhiteSpace(orderBy) ? "" : string.Format(" Order By {0} ", orderBy));
 
             return await CreateListFromCommandAsync(cmd);
         }
@@ -772,7 +775,7 @@ namespace Needletail.DataAccess {
             var cmd = factory.CreateCommand();
             cmd.Connection = connection;
             //Set the command
-            cmd.CommandText = string.Format("{0} FROM [{1}] {2} {3}", select, this.TableName, string.IsNullOrWhiteSpace(where) ? "" : string.Format(" WHERE {0} ", where), string.IsNullOrWhiteSpace(orderBy) ? "" : string.Format(" Order By {0} ", orderBy));
+            cmd.CommandText = string.Format("{0} FROM {1}{2}{3} {4} {5}", select, this.OOpen, this.TableName, this.OClose, string.IsNullOrWhiteSpace(where) ? "" : string.Format(" WHERE {0} ", where), string.IsNullOrWhiteSpace(orderBy) ? "" : string.Format(" Order By {0} ", orderBy));
 
             return  CreateListFromCommand(cmd);
         }
@@ -1112,7 +1115,7 @@ namespace Needletail.DataAccess {
             //create the query
             var cmd = factory.CreateCommand();
             cmd.Connection = connection;
-            cmd.CommandText = string.Format("SELECT {0} FROM [{1}] {2} {3} {4}", selectColumns, this.TableName, joinQuery, string.IsNullOrWhiteSpace(whereQuery) ? "" : string.Format(" WHERE {0} ", whereQuery), orderBy);
+            cmd.CommandText = string.Format("SELECT {0} FROM {1}{2}{3} {4} {5} {6}", selectColumns, this.OOpen,this.TableName,this.OClose, joinQuery, string.IsNullOrWhiteSpace(whereQuery) ? "" : string.Format(" WHERE {0} ", whereQuery), orderBy);
             //add the parameters
             AddParameters(cmd, args);
 
@@ -1134,7 +1137,8 @@ namespace Needletail.DataAccess {
             //create the query
             var cmd = factory.CreateCommand();
             cmd.Connection = connection;
-            cmd.CommandText = string.Format("SELECT {0} FROM [{1}] {2} {3} {4}", selectColumns, this.TableName, joinQuery, string.IsNullOrWhiteSpace(whereQuery) ? "" : string.Format(" WHERE {0} ", whereQuery), orderBy);
+            //cmd.CommandText = string.Format("SELECT {0} FROM [{1}] {2} {3} {4}", selectColumns, this.TableName, joinQuery, string.IsNullOrWhiteSpace(whereQuery) ? "" : string.Format(" WHERE {0} ", whereQuery), orderBy);
+            cmd.CommandText = string.Format("SELECT {0} FROM {1}{2}{3} {4} {5} {6}", selectColumns, this.OOpen, this.TableName, this.OClose, joinQuery, string.IsNullOrWhiteSpace(whereQuery) ? "" : string.Format(" WHERE {0} ", whereQuery), orderBy);
             //add the parameters
             AddParameters(cmd, args);
 
@@ -1157,7 +1161,7 @@ namespace Needletail.DataAccess {
             //create the query
             var cmd = factory.CreateCommand();
             cmd.Connection = connection;
-            cmd.CommandText = string.Format("SELECT {0} FROM [{1}] {2} {3} {4}", selectColumns, this.TableName, joinQuery, string.IsNullOrWhiteSpace(whereQuery) ? "" : string.Format(" WHERE {0} ", whereQuery), orderBy);
+            cmd.CommandText = string.Format("SELECT {0} FROM {1}{2}{3} {4} {5} {6}", selectColumns, this.OOpen, this.TableName,this.OClose, joinQuery, string.IsNullOrWhiteSpace(whereQuery) ? "" : string.Format(" WHERE {0} ", whereQuery), orderBy);
             //add the parameters
             AddParameters(cmd, args);
 
@@ -1180,7 +1184,8 @@ namespace Needletail.DataAccess {
             //create the query
             var cmd = factory.CreateCommand();
             cmd.Connection = connection;
-            cmd.CommandText = string.Format("SELECT {0} FROM [{1}] {2} {3} {4}", selectColumns, this.TableName, joinQuery, string.IsNullOrWhiteSpace(whereQuery) ? "" : string.Format(" WHERE {0} ", whereQuery), orderBy);
+            //cmd.CommandText = string.Format("SELECT {0} FROM [{1}] {2} {3} {4}", selectColumns, this.TableName, joinQuery, string.IsNullOrWhiteSpace(whereQuery) ? "" : string.Format(" WHERE {0} ", whereQuery), orderBy);
+            cmd.CommandText = string.Format("SELECT {0} FROM {1}{2}{3} {4} {5} {6}", selectColumns, this.OOpen, this.TableName, this.OClose, joinQuery, string.IsNullOrWhiteSpace(whereQuery) ? "" : string.Format(" WHERE {0} ", whereQuery), orderBy);
             //add the parameters
             AddParameters(cmd, args);
 
@@ -1198,7 +1203,7 @@ namespace Needletail.DataAccess {
 
         private StringBuilder GetUpdateString(object item, DbCommand cmd, ref bool keyFound) {
             var props = item.GetType().GetTypeInfo().GetProperties();
-            StringBuilder uq = new StringBuilder(string.Format("UPDATE [{0}] SET ", this.TableName));
+            StringBuilder uq = new StringBuilder(string.Format("UPDATE {0}{1}{2} SET ", this.OOpen, this.TableName,this.OClose));
             for(int x= 0; x< props.Length; x++) {
                 var p = props[x];
                 //do not update the key

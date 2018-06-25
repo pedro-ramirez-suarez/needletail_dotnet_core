@@ -10,7 +10,7 @@
     <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <PackOnBuild>true</PackOnBuild>
-    <PackageVersion>1.0.2</PackageVersion>
+    <PackageVersion>1.0.3</PackageVersion>
     <Authors>pramirez</Authors>
     <Owners>pramirez</Owners>
     <Description>Micro ORM, this version supports MySQL  and SQL </Description>

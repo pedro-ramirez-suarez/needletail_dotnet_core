@@ -14,5 +14,8 @@ namespace Needletail.DataAccess.Engines {
         void ConfigureParameterForValue(DbParameter param, object value, byte precision = 10, byte scale = 2);
 
         bool NeedLockOnConnection { get; }
+
+        string ObjectOpen { get; }
+        string ObjectClose { get; }
     }
 }

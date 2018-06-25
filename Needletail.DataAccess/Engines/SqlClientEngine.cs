@@ -11,7 +11,9 @@ namespace Needletail.DataAccess.Engines {
     public class SqlClientEngine : DBMSEngineBase, Needletail.DataAccess.Engines.IDBMSEngine
     {
 
+        public override string ObjectOpen { get { return "["; } }
 
+        public override string ObjectClose { get { return "]"; } }
 
 
         public override string GetQueryForPagination(string columns, string from, string where, string orderBy, int pageSize, int pageNumber, string key)
