@@ -190,7 +190,7 @@ namespace Needletail.DataAccess
             {
                 var attrs = p.GetCustomAttributes(typeof(TableKeyAttribute), true);
                 if (attrs.Any())
-                {
+                { 
                     Key = p.Name;
                     if ((attrs.First() as TableKeyAttribute).CanInsertKey)
                     {

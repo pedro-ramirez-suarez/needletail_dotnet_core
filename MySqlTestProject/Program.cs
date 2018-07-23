@@ -1,18 +1,27 @@
 ﻿using System;
-using tickets.Repositories;
-using System.Linq;
 
+using System.Linq;
+using MySqlTestProject.Repositories;
+using System.IO;
 namespace MySqlTestProject
 {
     class Program
     {
         static  void Main(string[] args)
         {
-            var tRepo = new TicketRepo();
-            var allT =  tRepo.GetAllTickets();
-            allT.Wait();
-            Console.WriteLine("Total Tickets: {0}",allT.Result.Count());
+            var tRepo = new  TicketRepo();
+            //import the data
+            //var allT = t
+
+            tRepo.InsertSample();
+            
+
+            Console.WriteLine("Value inserted");
+            //var tStream = StreamReader();
+            //Console.WriteLine("Total Tickets: {0}",allT.Result.Count());
             Console.ReadKey();
         }
     }
 }
+
+

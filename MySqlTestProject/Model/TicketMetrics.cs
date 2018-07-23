@@ -4,7 +4,7 @@ namespace tickets.Models
 {
 
 
-    public class OpsReview
+    public class OpsReviewOld
     {
         public string case_id { get; set; }
         public string work_group { get; set; }
