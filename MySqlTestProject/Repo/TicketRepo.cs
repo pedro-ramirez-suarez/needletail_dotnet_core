@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Needletail.DataAccess.Engines;
 using MySqlTestProject.Models.Mappings;
 
+
 namespace MySqlTestProject.Repositories
 {
     public class TicketRepo
@@ -24,6 +25,13 @@ namespace MySqlTestProject.Repositories
             var allT = await tickets.GetAllAsync();
             return allT;
 
+        }
+
+        public OpsReview GetTicket(string tt)
+        {
+            var tickets = new DBTableDataSourceBase<OpsReview, string>(MySqlServerConfiguration.ConnectionString, true);
+            var t = tickets.GetSingle(where: new { case_id = tt });
+            return t;
         }
 
         public async  Task<IEnumerable<OpsReview>> GetTicketsByYear(int year)
@@ -124,7 +132,7 @@ namespace MySqlTestProject.Repositories
                 resolved_month: 1,
                 resolved_week: 2,
                 resolved_year: 2018,
-                ticket_age: 1f,
+                ticket_age: 1,
                 root_cause: "",
                 root_cause_details: "",
                 assigned_to: "",

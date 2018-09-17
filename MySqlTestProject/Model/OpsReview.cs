@@ -26,7 +26,7 @@ namespace MySqlTestProject.Models
                         int resolved_month,
                         int resolved_week,
                         int resolved_year,
-                        float ticket_age,
+                        Decimal ticket_age,
                         string root_cause,
                         string root_cause_details,
                         string assigned_to,
@@ -95,7 +95,7 @@ namespace MySqlTestProject.Models
         public int resolved_year { get; set; }
         
         [JsonProperty("Age")]
-        public float ticket_age { get; set; }
+        public Decimal ticket_age { get; set; }
         
         [JsonProperty("Root Cause")]
         public string root_cause { get; set; }
